@@ -52,7 +52,7 @@ resource "google_compute_instance" "filebrowser" {
               "baseURL": "",
               "address": "",
               "log": "stdout",
-              "database": "/database/filebrowser.db",
+              "database": "/filebrowser.db",
               "root": "/srv"
             }
             EOF'
@@ -62,7 +62,7 @@ resource "google_compute_instance" "filebrowser" {
                 --privileged \
                 --restart unless-stopped \
                 -v /mnt/filestore:/srv \
-                -v /database/filebrowser.db:/database/filebrowser.db \
+                -v /database/filebrowser.db:/filebrowser.db \
                 -v /.filebrowser.json:/.filebrowser.json \
                 -u $(id -u):$(id -g) \
                 -p 8080:80 \
@@ -117,6 +117,7 @@ resource "google_compute_instance" "universalmediaserver" {
 
             # Create directories for UMS
             sudo mkdir -p /mnt/filestore/UMS
+            sudo chmod -R o+w /mnt/filestore/UMS
             sudo mkdir -p "$HOME"/.config/UMS
 
             docker run \
