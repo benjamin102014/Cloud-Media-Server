@@ -1,5 +1,5 @@
 ---
-- name: Setup Filebrowser instance
+- name: Setup File Browser instance
   hosts: filebrowser
   become: yes
   tasks:        
@@ -131,7 +131,7 @@
       ansible.builtin.file:
         path: "/mnt/filestore/media"
         state: directory
-        mode: '0757'                    # Filebrowser instance needs write access
+        mode: '0757'                    # File Browser instance needs write access
 
     - name: Create configuration directory for UMS
       ansible.builtin.file:
