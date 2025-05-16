@@ -20,7 +20,7 @@ echo 'project_id = "{google_project_id}"' > terraform.tfvars
 
 Create ssh keys for Ansible to use. Default path is `~/.ssh/id_rsa`, can be changed in `variables.tf`:
 ```
-key-gen -t rsa -b 4096
+ssh-keygen -t rsa -b 4096
 ```
 
 Provision instances:
