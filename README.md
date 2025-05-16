@@ -49,3 +49,9 @@ After instances are running and configured, you can access File Browser and Univ
 - Universal Media Server: `{universalmediaserver_ip}:9001`
     - Create a user at first launch
 
+#
+
+![image](https://github.com/user-attachments/assets/e9758487-2010-402c-8836-538bfc953f89)
+
+![image](https://github.com/user-attachments/assets/3b361f66-9c36-4c2e-9fbf-c7669f63db78)
+
