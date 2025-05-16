@@ -1,5 +1,5 @@
 # Cloud-Media-Server
-Universal Media Server hosted on Google Cloud, using Filestore as remote file system storage and Filebrowser for uploading and interacting with media files.
+Universal Media Server hosted on Google Cloud, using Filestore as remote file system storage and File Browser for uploading and interacting with media files.
 
 # Prerequisites
 - `Terraform`
@@ -42,9 +42,9 @@ ansible-playbook -i inventory.yml playbook.yml
 
 # 
 
-After instances are running and configured, you can access Filebrowser and Universal Media Server web interfaces at their respective adresses, found by running `terraform output`.
+After instances are running and configured, you can access File Browser and Universal Media Server web interfaces at their respective adresses, found by running `terraform output`.
 
-- Filebrowser: `{filebrowser_ip}:8080`
+- File Browser: `{filebrowser_ip}:8080`
     - Default credentials: `user=admin`, `pass=admin`
 - Universal Media Server: `{universalmediaserver_ip}:9001`
     - Create a user at first launch
