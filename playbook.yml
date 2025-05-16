@@ -1,0 +1,153 @@
+---
+- name: Setup Filebrowser instance
+  hosts: filebrowser
+  become: yes
+  tasks:        
+    - name: Disable man-db auto-update
+      ansible.builtin.shell: echo "man-db man-db/auto-update boolean false" | debconf-set-selections
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+
+    - name: Remove man-db auto-update file (too slow on micro instance)
+      ansible.builtin.file:
+        path: /var/lib/man-db/auto-update
+        state: absent
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install dependencies
+      ansible.builtin.apt:
+        name:
+          - nfs-common
+          - docker.io
+        state: present
+                
+    - name: Create filestore mount directory
+      ansible.builtin.file:
+        path: /mnt/filestore
+        state: directory
+
+    - name: Add NFS mount to fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        line: "{{ filestore_ip }}:/filestore_share /mnt/filestore nfs defaults 0 0"
+        state: present
+
+    - name: Mount NFS share
+      ansible.builtin.command: mount -a
+
+    - name: Enable Docker service
+      ansible.builtin.systemd:
+        name: docker
+        enabled: true
+        state: started
+
+    - name: Create database directory
+      ansible.builtin.file:
+        path: /database
+        state: directory
+
+    - name: Create filebrowser.db file
+      ansible.builtin.file:
+        path: /database/filebrowser.db
+        state: touch
+
+    - name: Create .filebrowser.json configuration file
+      ansible.builtin.copy:
+        dest: /.filebrowser.json
+        content: |                          # template at https://filebrowser.org/installation#docker
+          {
+            "port": 80,
+            "baseURL": "",
+            "address": "",
+            "log": "stdout",
+            "database": "/filebrowser.db",
+            "root": "/srv"
+          }
+            
+    - name: Run Filebrowser Docker container
+      community.docker.docker_container:
+        name: filebrowser
+        image: filebrowser/filebrowser:v2.32.0-s6
+        state: started
+        restart_policy: unless-stopped
+        privileged: yes
+        ports:
+          - "8080:80"
+        volumes:
+          - /mnt/filestore:/srv
+          - /database/filebrowser.db:/filebrowser.db 
+          - /.filebrowser.json:/.filebrowser.json
+        user: "0:0"
+
+- name: Setup Universal Media Server instance
+  hosts: universalmediaserver
+  become: yes
+  tasks:
+    - name: Disable man-db auto-update (too slow on micro instance)
+      ansible.builtin.shell: echo "man-db man-db/auto-update boolean false" | debconf-set-selections
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+
+    - name: Remove man-db auto-update file
+      ansible.builtin.file:
+        path: /var/lib/man-db/auto-update
+        state: absent
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install dependencies
+      ansible.builtin.apt:
+        name:
+          - nfs-common
+          - docker.io
+        state: present
+                
+    - name: Create filestore mount directory
+      ansible.builtin.file:
+        path: /mnt/filestore
+        state: directory
+
+    - name: Add NFS mount to fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        line: "{{ filestore_ip }}:/filestore_share /mnt/filestore nfs defaults 0 0"
+        state: present
+
+    - name: Mount NFS share
+      ansible.builtin.command: mount -a
+
+    - name: Enable Docker service
+      ansible.builtin.systemd:
+        name: docker
+        enabled: true
+        state: started
+
+    - name: Create directory for UMS
+      ansible.builtin.file:
+        path: "/mnt/filestore/media"
+        state: directory
+        mode: '0757'                    # Filebrowser instance needs write access
+
+    - name: Create configuration directory for UMS
+      ansible.builtin.file:
+        path: "~/.config/UMS"
+        state: directory
+
+    - name: Run Universal Media Server Docker container
+      community.docker.docker_container:
+        name: universalmediaserver
+        image: universalmediaserver/ums:14.12.1
+        state: started
+        restart_policy: unless-stopped
+        ports:
+          - "1044:1044"
+          - "5001:5001"
+          - "9001:9001"
+        volumes:
+          - /mnt/filestore/media:/root/media
+          - ~/.config/UMS:/root/.config/UMS
