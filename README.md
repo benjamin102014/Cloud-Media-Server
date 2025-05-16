@@ -15,7 +15,7 @@ gcloud auth application-default login
 
 Create `terraform.tfvars` file with `project_id`:
 ```
-echo 'project_id = "{google project id}"' > terraform.tfvars
+echo 'project_id = "{google_project_id}"' > terraform.tfvars
 ```
 
 Create ssh keys for Ansible to use. Default path is `~/.ssh/id_rsa`, can be changed in `variables.tf`:
