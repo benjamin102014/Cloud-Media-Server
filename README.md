@@ -1,4 +1,4 @@
-# Cloud-Media-Server
+# Cloud Media Server
 Universal Media Server hosted on Google Cloud, using Filestore as remote file system storage and File Browser for uploading and interacting with media files.
 
 # Prerequisites
