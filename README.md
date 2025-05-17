@@ -23,17 +23,18 @@ Create ssh keys for Ansible to use. Default path is `~/.ssh/id_rsa`, can be chan
 ssh-keygen -t rsa -b 4096
 ```
 
+Download Ansible collections:
+```
+ansible-galaxy collection install cloud.terraform
+ansible-galaxy collection install community.docker
+```
+
 Provision instances:
 ```
 terraform init
 terraform apply
 ```
 
-Download Ansible collections:
-```
-ansible-galaxy collection install cloud.terraform
-ansible-galaxy collection install community.docker
-```
 
 Configure instances:
 ```
